@@ -578,20 +578,4 @@ A comparação entre os 10 filmes mais populares produzidos pelos EUA revela que
 
 ---
 
-## Estrutura do Repositório
 
-```
-.
-├── evidencias/              # Capturas de tela de cada etapa do pipeline
-│   ├── graficos/            # Gráficos gerados no QuickSight
-│   ├── Parquet CSV/         # Evidências do job e crawler CSV
-│   ├── Parquet JSON/        # Evidências do job e crawler JSON
-│   ├── pre-refined-staged/  # Evidências da camada pré-refined
-│   ├── refined/             # Evidências da camada refined
-│   └── Desafio/             # Evidências da função Lambda e layers
-├── Desafio/
-│   └── entregaveis/
-│       └── modelo_dimensional/
-│           └── dimensionamento_sprint_9.png
-└── README.md
-```
