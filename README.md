@@ -19,7 +19,6 @@ A base de dados combina dois conjuntos distintos: um arquivo CSV proveniente de 
 3. [Processamento e Limpeza com AWS Glue (Camada Trusted)](#3-processamento-e-limpeza-com-aws-glue-camada-trusted)
 4. [Cruzamento de Dados e Modelagem Dimensional (Camada Refined)](#4-cruzamento-de-dados-e-modelagem-dimensional-camada-refined)
 5. [Visualização com AWS QuickSight](#5-visualização-com-aws-quicksight)
-6. [Resultados e Análises](#6-resultados-e-análises)
 
 ---
 
@@ -49,7 +48,7 @@ A imagem utiliza `python:3.9` como base, configura `/app` como diretório de tra
 
 **Evidência — criação da imagem:**
 
-![criacao_imagem](prints/sprint 6/01_codigo_criar_img.png)
+![prints/sprint 6/01_codigo_criar_img.png](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/bffa374d90d1fabf20fbed1d7e5c5db7e05c9201/prints/sprint%206/01_codigo_criar_img.png)
 
 ### 1.2 Script de Upload para o S3
 
@@ -83,11 +82,12 @@ enviar_para_s3(arquivo_series, especificacao_series, 'series.csv')
 A função `enviar_para_s3` constrói o caminho de destino dinamicamente, garantindo que cada execução registre a data de processamento no próprio path do arquivo — prática essencial para rastreabilidade em pipelines de dados.
 
 **Evidências:**
-
-![execucao_script](./../evidencias/04_codigo_upload_arquivos.png)
-![criacao_bucket](./../evidencias/05_criacao_bucket.png)
-![upload_csv_movies](./../evidencias/06_csv_AWS_movies.png)
-![upload_csv_series](./../evidencias/06_csv_AWS_series.png)
+### Executando script
+![[execucao_script](./../evidencias/04_codigo_upload_arquivos.png)](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/d39262804b9308958931049acf22cd55cbe02ec7/prints/sprint%206/04_codigo_upload_arquivos.png)
+### Bucket
+![[criacao_bucket](./../evidencias/05_criacao_bucket.png)](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/d39262804b9308958931049acf22cd55cbe02ec7/prints/sprint%206/05_criacao_bucket.png)
+### Csv Filmes e Séries
+![upload_csv_movies_e_series](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/d39262804b9308958931049acf22cd55cbe02ec7/prints/sprint%206/06_csv_AWS.png)
 
 ---
 
