@@ -49,7 +49,7 @@ A imagem utiliza `python:3.9` como base, configura `/app` como diretório de tra
 
 **Evidência — criação da imagem:**
 
-![criacao_imagem](./../evidencias/02_criacao_imagem.png)
+![criacao_imagem](../prints/01_codigo_criar_img.png)
 
 ### 1.2 Script de Upload para o S3
 
