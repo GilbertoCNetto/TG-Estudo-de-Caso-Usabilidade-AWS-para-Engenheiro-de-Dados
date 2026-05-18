@@ -35,7 +35,7 @@ RUN pip install boto3
 CMD ["python", "/app/volume/script.py"]
 ```
 
-**Evidência — criação da imagem:**
+**Evidência - criação da imagem:**
 
 ![prints/sprint 6/01_codigo_criar_img.png](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/bffa374d90d1fabf20fbed1d7e5c5db7e05c9201/prints/sprint%206/01_codigo_criar_img.png)
 
@@ -71,11 +71,12 @@ enviar_para_s3(arquivo_series, especificacao_series, 'series.csv')
 ```
 
 **Evidências:**
-### Executando script
+### Executando script para envio dos arquivos:
 ![[execucao_script](./../evidencias/04_codigo_upload_arquivos.png)](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/d39262804b9308958931049acf22cd55cbe02ec7/prints/sprint%206/04_codigo_upload_arquivos.png)
-### Bucket
+### Bucket:
+#### Aqui é onde ficarão armazenados os dados na plataforma AWS
 ![[criacao_bucket](./../evidencias/05_criacao_bucket.png)](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/d39262804b9308958931049acf22cd55cbe02ec7/prints/sprint%206/05_criacao_bucket.png)
-### Csv Filmes e Séries
+### Csv Filmes e Séries:
 ![upload_csv_movies_e_series](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/d39262804b9308958931049acf22cd55cbe02ec7/prints/sprint%206/06_csv_AWS.png)
 
 ---
@@ -84,7 +85,7 @@ enviar_para_s3(arquivo_series, especificacao_series, 'series.csv')
 
 ### 2.1 Criação da Lambda Layer
 
-Para que as bibliotecas externas `requests` e `boto3` ficassem disponíveis no ambiente Lambda — que não as inclui no runtime padrão —, foi necessário criar uma **Lambda Layer**. O processo consistiu em:
+Para que as bibliotecas externas `requests` e `boto3` ficassem disponíveis no ambiente Lambda — que não incluimos no runtime padrão —, foi necessário criar uma **Lambda Layer**. O processo consistiu em:
 
 1. Criar um contêiner baseado em **Amazon Linux 2023**, sistema operacional compatível com o ambiente de execução do Lambda;
 2. Instalar as dependências via `pip` dentro do contêiner;
@@ -101,21 +102,22 @@ RUN yum install -y \
 RUN yum -y clean all
 ```
 
-**Evidências — criação e upload da Layer:**
+**Evidências - criação e upload da Layer:**
+### Criando a imagem
+#### O comando docker build foi utilizado para a construção da imagem:
+![criacao_imagem_amazonlinux](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%207/01_criacao_da%20_imagem.png)
+### Nesta etapa foi feita a criação da layer:
+![copiando_layer](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%207/03_copiando_layer.png)
 
-![criacao_imagem_amazonlinux](./../evidencias/Desafio/01_criacao_da_imagem.png)
-
-![copiando_layer](./../evidencias/Desafio/03_copiando_layer.png)
-
-![criacao_layer](./../evidencias/Desafio/criacao_layer.png)
-
-![upload_layer_s3](./../evidencias/Desafio/upload_layer_s3.png)
+![criacao_layer](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%207/criacao_layer.png)
+### Upload da layer no S3:
+![upload_layer_s3](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%207/upload_layer_s3.png)
 
 ---
 
-### 2.2 Função Lambda — Coleta via API REST
+### 2.2 Função Lambda — Coleta via API
 
-A função Lambda realiza a coleta de dados via API REST com paginação automática. A cada execução, percorre múltiplas páginas de resultados, enriquece cada registro buscando seus detalhes individuais em um segundo endpoint e salva os dados em lotes no S3, particionados por data de execução. O caminho de saída segue a mesma convenção hierárquica adotada na camada Raw.
+A função Lambda realiza a coleta de dados via API com paginação automática. A cada execução, percorre múltiplas páginas de resultados, enriquece cada registro buscando seus detalhes individuais em um segundo endpoint e salva os dados em lotes no S3, particionados por data de execução. O caminho de saída segue a mesma convenção hierárquica adotada na camada Raw.
 
 A função é composta por três partes principais:
 
@@ -172,26 +174,33 @@ def lambda_handler(event, context):
         "body": f"{len(coletados)} registros salvos em {s3_folder}/{ano}/{mes}/{dia}/"
     }
 ```
+### 2.3 Nesta etapa foi feita a criação e configuração da função Lambda, a adição da layer e por fim a execução do código acima no proprio lambda - segue abaixo as evidências.
 
-**Evidências — criação, configuração e execução da função Lambda:**
+**Evidências - Criação, configuração e execução da função Lambda:**
 
-![criacao_funcao_lambda](./../evidencias/Desafio/06_funcao_lambda_aws.png)
+### Criação da função lambda:
+![criacao_funcao_lambda](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%207/06_funcao_lambda%20_aws.png)
 
-![configuracao_lambda](./../evidencias/Desafio/configuracao_funcao_lambda.png)
+### Configuração da função lambda:
+#### Definindo o timeout, memória usada pelo lambda e as runtime settings:
+![configuracao_lambda](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%207/configuracao_funcao_lambda.png)
 
-![configuracao_lambda2](./../evidencias/Desafio/configuracao_funcao_lambda2.png)
+![configuracao_lambda2](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%207/configuracao_funcao_lambda2.png)
 
-![adicao_layer](./../evidencias/Desafio/08_adicao_layer_lambda.png)
+### Adição da layer:
+![adicao_layer](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%207/08%20adicao_layer_lambda.png)
 
-![execucao_lambda](./../evidencias/Desafio/09_execucao_codigo_lambda.png)
+### Execução do código:
+![execucao_lambda](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%207/09%20execucao_codigo%20_lambda.png)
 
-![jsons_no_bucket](./../evidencias/Desafio/10_criacao_jsons_bucket_pelo_codigo.png)
+### Resultado desse processo:
+![jsons_no_bucket](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%207/10%20criacao_jsons_bucket_pelo_codigo.png)
 
 ---
 
 ## 3. Processamento e Limpeza com AWS Glue (Camada Trusted)
 
-Com os dados brutos armazenados na camada Raw, a etapa seguinte consistiu na execução de dois jobs de ETL (*Extract, Transform, Load*) no **AWS Glue** com **PySpark** — um para cada formato de entrada (CSV e JSON). Ambos os jobs leem os dados do S3 Raw, aplicam transformações e gravam o resultado em formato **Parquet** na camada Trusted, particionado por data de execução.
+Com os dados brutos armazenados na camada Raw, a etapa seguinte consistiu na execução de dois jobs de ETL (*Extract, Transform, Load*) no **AWS Glue** com **PySpark** - um para cada formato de entrada (CSV e JSON). Ambos os jobs leem os dados do S3 Raw, aplicam transformações e gravam o resultado em formato **Parquet** na camada Trusted, particionado por data de execução.
 
 ---
 
@@ -241,15 +250,16 @@ glueContext.write_dynamic_frame.from_options(
 job.commit()
 ```
 
-**Evidências — execução do job e confirmação do Parquet no S3:**
+**Evidências - execução do job e confirmação do Parquet no S3:**
+### Execução:
+![run_job_csv](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%208/parquet%20csv/03_run_job.png)
 
-![run_job_csv](./../evidencias/Parquet%20CSV/03_run_job.png)
-
-![parquet_csv_s3](./../evidencias/Parquet%20CSV/pos_execucao_job_csv.png)
+### Confirmação do resultado:
+![parquet_cs_s3](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%208/parquet%20csv/pos_execucao_job_csv.png)
 
 ---
 
-### 3.2 Job ETL — JSON para Parquet
+### 3.2 Job ETL - JSON para Parquet
 
 O job lê os arquivos JSON da camada Raw e aplica as seguintes transformações:
 
@@ -317,11 +327,11 @@ glueContext.write_dynamic_frame.from_options(
 job.commit()
 ```
 
-**Evidências — execução do job e confirmação do Parquet no S3:**
-
-![run_job_json](./../evidencias/Parquet%20JSON/03_run_job.png)
-
-![parquet_json_s3](./../evidencias/Parquet%20JSON/04_pos_execucao_json.png)
+**Evidências - execução do job e confirmação do Parquet no S3:**
+### Execução:
+![run_job_json](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%208/parquet%20json/03_run_job.png)
+### Confirmação do resultado:
+![parquet_json_s3](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%208/parquet%20json/04_pos_execucao_json.png)
 
 ---
 
@@ -329,35 +339,35 @@ job.commit()
 
 Após cada job, **Glue Crawlers** são executados para catalogar automaticamente as tabelas geradas no **Glue Data Catalog**. As tabelas ficam acessíveis via SQL no **AWS Athena**, onde consultas de validação confirmam o schema e a integridade dos dados antes de avançar para a próxima camada.
 
-**Evidências — criação e execução dos Crawlers:**
+**Evidências - criação e execução dos Crawlers:**
 
-![database](./../evidencias/Parquet%20JSON/database_usado.png)
+![database](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%208/parquet%20json/database_usado.png)
 
-![crawler_csv](./../evidencias/Parquet%20CSV/05_crawler_csv.png)
+![crawler_csv](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%208/parquet%20csv/05_crawler_csv.png)
 
-![exec_crawler_csv](./../evidencias/Parquet%20CSV/06_execucao_crawler.png)
+![exec_crawler_csv](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%208/parquet%20csv/06_execucao_crawler.png)
 
-![crawler_json](./../evidencias/Parquet%20JSON/05_crawler_json.png)
+![crawler_json](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%208/parquet%20json/05_crawler_json.png)
 
-![exec_crawler_json](./../evidencias/Parquet%20JSON/execucao_crawler_json.png)
+![exec_crawler_json](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%208/parquet%20json/execucao_crawler_json.png)
 
-![tables](./../evidencias/Parquet%20JSON/tables.png)
+![tables](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%208/parquet%20json/tables.png)
 
-**Evidências — queries de validação no Athena:**
+**Evidências - queries de validação no Athena:**
 
-![query_csv](./../evidencias/Parquet%20CSV/07_query_athena.png)
+![query_csv](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%208/parquet%20csv/07_query_athena.png)
 
-![schema_csv](./../evidencias/Parquet%20CSV/08_schema_csv.png)
+![schema_csv](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%208/parquet%20csv/08_schema_csv.png)
 
-![query_json](./../evidencias/Parquet%20JSON/06_query_athena.png)
+![query_json](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%208/parquet%20json/06_query_athena.png)
 
-![schema_json](./../evidencias/Parquet%20JSON/schema.png)
+![schema_json](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%208/parquet%20json/schema.png)
 
 ---
 
 ## 4. Cruzamento de Dados e Modelagem Dimensional (Camada Refined)
 
-### 4.1 Job ETL — Camada Pré-Refined
+### 4.1 Job ETL - Camada Pré-Refined
 
 Este job realiza o cruzamento dos dados das duas fontes já tratados na camada Trusted. O join é feito pelo título do registro, e o campo de gênero artístico proveniente do CSV é incorporado ao dataset JSON como metadado adicional.
 
@@ -422,17 +432,17 @@ glueContext.write_dynamic_frame.from_options(
 job.commit()
 ```
 
-**Evidências — execução do job e arquivos gerados:**
+**Evidências - execução do job e arquivos gerados:**
 
-![run_pre_refined](./../evidencias/pre-refined-staged/03_job_run.png)
+![run_pre_refined](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%209/pre-refined-staged/03_job_run.png)
 
-![arquivos_pre_refined](./../evidencias/pre-refined-staged/04_arquivos_salvos_bucket.png)
+![arquivos_pre_refined](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%209/pre-refined-staged/04_arquivos_salvos_bucket.png)
 
-![query_pre_refined](./../evidencias/pre-refined-staged/05_visualizacao_pre_refned_athena.png)
+![query_pre_refined](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%209/pre-refined-staged/05_visualizacao_pre_refned_athena.png)
 
 ---
 
-### 4.2 Job ETL — Modelagem Dimensional (Camada Refined)
+### 4.2 Job ETL - Modelagem Dimensional (Camada Refined)
 
 A partir dos dados da camada Pré-Refined, este job implementa um **modelo dimensional em esquema estrela**, composto por três tabelas dimensão e uma tabela fato. Cada tabela é salva em uma subpasta separada no S3.
 
@@ -507,15 +517,14 @@ for tabela, pasta in [
 job.commit()
 ```
 
-**Evidências — execução do job, dimensões no S3 e validação no Athena:**
+**Evidências - execução do job, dimensões no S3 e validação no Athena:**
 
-![run_refined](./../evidencias/refined/03_job_run.png)
+![run_refined](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%209/refined/03_job_run.png)
 
-![dimensoes_refined](./../evidencias/refined/04_dimensoes_buckets.png)
+![dimensoes_refined](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%209/refined/04_dimensoes_buckets.png)
 
-![query_dim_filmes](./../evidencias/refined/05_visualizacao_athena_dim_filmes.png)
+![query_dim_filmes](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%209/refined/05_visualizacao_athena_dim_filmes.png)
 
-![modelo_dimensional](./../Desafio/entregaveis/modelo_dimensional/dimensionamento_sprint_9.png)
 
 ---
 
@@ -527,21 +536,21 @@ Com as tabelas dimensionais e de fato catalogadas no Glue Data Catalog e acessí
 
 Os datasets foram criados a partir do Athena como fonte de dados, selecionando individualmente cada tabela do database configurado no Glue Data Catalog.
 
-**Evidências — criação dos datasets:**
+**Evidências - criação dos datasets:**
 
-![criando_datasets](./../evidencias/01_01_criando_datasets.png)
+![criando_datasets](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%2010/01_01_criando_datasets.png)
 
-![selecao_athena](./../evidencias/01_02_selecao_athena.png)
+![selecao_athena](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%2010/01_02_selecao_athena.png)
 
-![criacao_dataset_pt3](./../evidencias/01_03_criacao_dataset_pt3.png)
+![criacao_dataset_pt3](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%2010/01_03_criacao_dataset_pt3.png)
 
-![criacao_dataset_pt4](./../evidencias/01_04_criacao_dataset_pt4.png)
+![criacao_dataset_pt4](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%2010/01_04_criacao_dataset_pt4.png)
 
-![criacao_dataset_pt5](./../evidencias/01_05_criacao_dataset_pt5.png)
+![criacao_dataset_pt5](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%2010/01_05_criacao_dataset_pt5.png)
 
-![criacao_dataset_pt6](./../evidencias/01_06_criacao_dataset_pt6.png)
+![criacao_dataset_pt6](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%2010/01_06_criacao_dataset_pt6.png)
 
-![criacao_dataset_pt7](./../evidencias/01_07_criacao_dataset_pt7.png)
+![criacao_dataset_pt7](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%2010/01_07_criacao_dataset_pt7.png)
 
 ---
 
@@ -549,11 +558,11 @@ Os datasets foram criados a partir do Athena como fonte de dados, selecionando i
 
 Os joins foram configurados diretamente no editor de dataset do QuickSight. A tabela `fato_filme` foi definida como tabela principal, com **left joins** para cada uma das três dimensões, respeitando o modelo estrela construído na etapa anterior.
 
-**Evidências — configuração dos joins:**
+**Evidências - configuração dos joins:**
 
-![realizando_join](./../evidencias/02_realizando_join.png)
+![realizando_join](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%2010/02_realizando_join.png)
 
-![lefts_joins_fato](./../evidencias/02_02_lefts_joins_fato.png)
+![lefts_joins_fato](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%2010/02_02_lefts_joins_fato.png)
 
 ---
 
@@ -561,15 +570,15 @@ Os joins foram configurados diretamente no editor de dataset do QuickSight. A ta
 
 Com o dataset unificado configurado, foi criada uma nova análise no QuickSight. A partir dela, foram construídos os painéis e gráficos utilizados no estudo de caso.
 
-**Evidências — criação da análise:**
+**Evidências - criação da análise:**
 
-![nova_analise](./../evidencias/03_criando_analise.png)
+![nova_analise](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%2010/03_criando_analise.png)
 
-![selecionando_dataset](./../evidencias/04_selecionando_dataset.png)
+![selecionando_dataset](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%2010/04_selecionando_dataset.png)
 
-![usando_em_analise](./../evidencias/05_usando_em_analise.png)
+![usando_em_analise](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%2010/05_usando_em_analise.png)
 
-![tela_final](./../evidencias/06_tela_final.png)
+![tela_final](https://github.com/GilbertoCNetto/TG-Estudo-de-Caso-Usabilidade-AWS-para-Engenheiro-de-Dados/blob/404d19221ce1875aa1b2fae167d06f9f0c2c8529/prints/sprint%2010/06_tela_final.png)
 
 ---
 
